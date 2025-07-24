@@ -6,11 +6,11 @@ AccessFuzz is a lightweight internal tool designed to help security teams identi
 
 ### ✨ Features
 
-✅ Role-based request replay for API endpoints
-✅ Supports GET, POST, PUT, DELETE methods
-✅ Detects unauthorized access based on status codes
-✅ JSON report output
-✅ Minimal, extensible codebase
+- ✅ Role-based request replay for API endpoints 
+- ✅ Supports GET, POST, PUT, DELETE methods 
+- ✅ Detects unauthorized access based on status codes 
+- ✅ JSON report output 
+- ✅ Minimal, extensible codebase 
 
 ---
 
