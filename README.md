@@ -77,7 +77,7 @@ Configure the input in their respective files:
 #### **Run the Tool**
 
 ```bash
-python3 accessfuzz.py --endpoints endpoints.json --tokens tokens.json
+python3 accessfuzz.py --endpoints endpoints.json --tokens tokens.json --output accessfuzz_report.json 
 ```
 
 #### **View the Results**
