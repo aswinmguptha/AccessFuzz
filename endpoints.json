@@ -1,0 +1,14 @@
+[
+  {
+    "method": "GET",
+    "url": "http://localhost:5000/api/admin/dashboard"
+  },
+  {
+    "method": "GET",
+    "url": "http://localhost:5000/api/user/profile/1"
+  },
+  {
+    "method": "GET",
+    "url": "http://localhost:5000/api/user/profile/2"
+  }
+]

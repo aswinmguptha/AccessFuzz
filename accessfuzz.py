@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import json
-import time
+import argparse
 import requests
-from typing import Dict
+import time
+import sys
+import json
+from rich.console import Console
+from rich.table import Table
+from rich import box
+from typing import List, Dict
+
+console = Console()
 
 # === AccessFuzz Banner ===
 def print_banner():
@@ -27,50 +34,18 @@ def print_banner():
 """
     print(banner)
 
-# === Input Configuration ===
-endpoints = [
-    {
-        "method": "GET",
-        "url": "http://localhost:5000/api/admin/dashboard",
-        "headers": {},
-        "params": {},
-        "data": None
-    },
-    {
-        "method": "GET",
-        "url": "http://localhost:5000/api/user/profile/1",
-        "headers": {},
-        "params": {},
-        "data": None
-    },
-    {
-        "method": "GET",
-        "url": "http://localhost:5000/api/user/profile/2",
-        "headers": {},
-        "params": {},
-        "data": None
-    },
-    {
-        "method": "GET",
-        "url": "http://localhost:5000/api/user/profile/3",
-        "headers": {},
-        "params": {},
-        "data": None
-    }
-]
-
-# === Roles & Tokens ===
-
-role_tokens = {
-    "admin": {"Authorization": "Bearer ADMIN_TOKEN"},
-    "user": {"Authorization": "Bearer USER_TOKEN"},
-    "guest": {"Authorization": "Bearer GUEST_TOKEN"},
-}
+def load_json(file_path: str):
+    try:
+        with open(file_path, "r") as f:
+            return json.load(f)
+    except Exception as e:
+        console.print(f"[red]Error loading {file_path}:[/red] {e}")
+        return None
 
 def test_endpoint(endpoint, role, token_headers):
-    method = endpoint["method"]
+    method = endpoint["method"].upper()
     url = endpoint["url"]
-    headers = {**endpoint["headers"], **token_headers}
+    headers = {**endpoint.get("headers", {}), **token_headers}
     params = endpoint.get("params", {})
     data = endpoint.get("data", None)
 
@@ -80,29 +55,55 @@ def test_endpoint(endpoint, role, token_headers):
     except Exception as e:
         return 0, str(e)
 
-def run_tests():
+def run_tests(endpoints: List[Dict], roles: Dict[str, Dict]):
     results = []
-
+    table = Table(show_header=True, header_style="bold magenta", box=box.SIMPLE)
+    table.add_column("Method", width=6)
+    table.add_column("Endpoint")
+    table.add_column("Role", style="cyan", width=10)
+    table.add_column("Status", justify="center")
+    
     for ep in endpoints:
-        print(f"\n[+] Testing endpoint: {ep['method']} {ep['url']}")
-        for role, headers in role_tokens.items():
-            status_code, response = test_endpoint(ep, role, headers)
-            print(f"    [{role.upper()}] → Status: {status_code}")
+        method = ep.get("method", "GET")
+        url = ep.get("url", "")
+        for role, headers in roles.items():
+            status_code, _ = test_endpoint(ep, role, headers)
+            status_color = "green" if status_code == 200 else "yellow" if status_code in [401, 403] else "red"
+            table.add_row(method, url, role, f"[{status_color}]{status_code}[/{status_color}]")
             results.append({
-                "endpoint": ep["url"],
-                "method": ep["method"],
+                "method": method,
+                "endpoint": url,
                 "role": role,
                 "status": status_code
             })
-            time.sleep(0.5)
-
+            time.sleep(0.2)
+    
+    console.print("\n[bold underline]Scan Results[/bold underline]")
+    console.print(table)
     return results
 
-if __name__ == "__main__":
-    print_banner()
-    results = run_tests()
-
-    with open("accessfuzz_report.json", "w") as f:
+def write_report(results: List[Dict], output_path: str = "accessfuzz_report.json"):
+    with open(output_path, "w") as f:
         json.dump(results, f, indent=2)
+    console.print(f"\n[green]Report saved to:[/green] {output_path}")
+    
+def main():
+    print_banner()
+    
+    parser = argparse.ArgumentParser(description="AccessFuzz - API Authorization Tester")
+    parser.add_argument("--endpoints", required=True, help="Path to JSON file with API endpoints")
+    parser.add_argument("--tokens", required=True, help="Path to JSON file with role-token headers")
+    args = parser.parse_args()
 
-    print("\n[+] Scan complete. Report saved to accessfuzz_report.json")
+    endpoints = load_json(args.endpoints)
+    role_tokens = load_json(args.tokens)
+
+    if not endpoints or not role_tokens:
+        console.print("[red]Error: Invalid input files.[/red]")
+        return
+
+    results = run_tests(endpoints, role_tokens)
+    write_report(results)
+        
+if __name__ == "__main__":
+    main()
