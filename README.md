@@ -40,24 +40,38 @@ pip install -r requirements.txt
 
 #### **Configure Endpoints and Tokens**
 
-Edit `endpoints.json` and `tokens.json ` to configure the input:
+Configure the input in their respective files:
 
+`endpoints.json`
 ```json
-# List of endpoints to test
 [
   {
     "method": "GET",
     "url": "http://localhost:5000/api/admin/dashboard"
   },
-  ...
+  {
+    "method": "GET",
+    "url": "http://localhost:5000/api/user/profile/1"
+  },
+  {
+    "method": "GET",
+    "url": "http://localhost:5000/api/user/profile/2"
+  }
+]
 ```
+`tokens.json`
 ```json
-# Map of roles and their auth headers
 {
   "admin": {
     "Authorization": "Bearer ADMIN_TOKEN"
   },
-  ...
+  "user": {
+    "Authorization": "Bearer USER_TOKEN"
+  },
+  "guest": {
+    "Authorization": "Bearer GUEST_TOKEN"
+  }
+}
 ```
 
 #### **Run the Tool**
