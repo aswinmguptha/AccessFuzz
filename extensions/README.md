@@ -23,9 +23,10 @@ A lightweight Burp Suite extension to extract HTTP requests from the Burp Proxy/
 Once the extension is loaded, it automatically adds a menu item in the **Burp Suite menu**:
 
 1. Go to Proxy > HTTP History
-2. Right click on any request
-3. Choose `Extensions > AccessFuzz Exporter > Export Endpoints`.
-4. The exported data will be copied to the clipboard and saved to a file named `endpoints.json` in the home directory.
+2. Filter the requests as required
+3. Select all filtered requests with `Control + A` and right click on any request
+4. Choose `Extensions > AccessFuzz Exporter > Export Endpoints`.
+5. The exported data will be copied to the clipboard and saved to a file named `endpoints.json` in the home directory.
 
 
 ### 🧪 Sample Output (clipboard or JSON file)
