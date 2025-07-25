@@ -40,31 +40,30 @@ pip install -r requirements.txt
 
 #### **Configure Endpoints and Tokens**
 
-Edit `accessfuzz.py` and set:
+Edit `endpoints.json` and `tokens.json ` to configure the input:
 
-```python
+```json
 # List of endpoints to test
-endpoints = [
-    {
-        "method": "GET",
-        "url": "http://localhost:5000/api/admin/dashboard",
-        ...
-    },
-    ...
-]
-
+[
+  {
+    "method": "GET",
+    "url": "http://localhost:5000/api/admin/dashboard"
+  },
+  ...
+```
+```json
 # Map of roles and their auth headers
-role_tokens = {
-    "admin": {"Authorization": "Bearer ADMIN_TOKEN"},
-    "user": {"Authorization": "Bearer USER_TOKEN"},
-    "guest": {"Authorization": "Bearer GUEST_TOKEN"},
-}
+{
+  "admin": {
+    "Authorization": "Bearer ADMIN_TOKEN"
+  },
+  ...
 ```
 
 #### **Run the Tool**
 
 ```bash
-python3 accessfuzz.py
+python3 accessfuzz.py --endpoints endpoints.json --tokens tokens.json
 ```
 
 #### **View the Results**
