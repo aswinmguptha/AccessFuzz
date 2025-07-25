@@ -82,7 +82,9 @@ def run_tests(endpoints: List[Dict], roles: Dict[str, Dict]):
     console.print(table)
     return results
 
-def write_report(results: List[Dict], output_path: str = "accessfuzz_report.json"):
+def write_report(results: List[Dict], output_path: str):
+    if not output_path.lower().endswith('.json'):
+        output_path += '.json'
     with open(output_path, "w") as f:
         json.dump(results, f, indent=2)
     console.print(f"\n[green]Report saved to:[/green] {output_path}")
@@ -93,17 +95,19 @@ def main():
     parser = argparse.ArgumentParser(description="AccessFuzz - API Authorization Tester")
     parser.add_argument("--endpoints", required=True, help="Path to JSON file with API endpoints")
     parser.add_argument("--tokens", required=True, help="Path to JSON file with role-token headers")
+    parser.add_argument("--output", help="Path to save report JSON", default="accessfuzz_report.json")
     args = parser.parse_args()
 
     endpoints = load_json(args.endpoints)
     role_tokens = load_json(args.tokens)
-
+    output_path = args.output
+    
     if not endpoints or not role_tokens:
         console.print("[red]Error: Invalid input files.[/red]")
         return
 
     results = run_tests(endpoints, role_tokens)
-    write_report(results)
-        
+    write_report(results, output_path)
+
 if __name__ == "__main__":
     main()
