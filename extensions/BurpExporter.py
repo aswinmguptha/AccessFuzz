@@ -11,16 +11,22 @@ class BurpExtender(IBurpExtender, IContextMenuFactory):
         self._helpers = callbacks.getHelpers()
         callbacks.setExtensionName("AccessFuzz Exporter")
         callbacks.registerContextMenuFactory(self)
+        self._invocation = None
 
     def createMenuItems(self, invocation):
-        menu = JMenuItem("Export Endpoints", actionPerformed=lambda x: self.export_endpoints())
+        self._invocation = invocation
+        menu = JMenuItem("Export Selected Endpoints", actionPerformed=self.export_selected_endpoints)
         return [menu]
 
-    def export_endpoints(self):
-        history = self._callbacks.getProxyHistory()
+    def export_selected_endpoints(self, event):
+        selected_items = self._invocation.getSelectedMessages()
+        if not selected_items:
+            print("[-] No messages selected.")
+            return
+
         results = []
 
-        for item in history:
+        for item in selected_items:
             request_info = self._helpers.analyzeRequest(item)
             method = request_info.getMethod()
             url = str(request_info.getUrl())
