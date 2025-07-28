@@ -42,6 +42,16 @@ def load_json(file_path: str):
         console.print(f"[red]Error loading {file_path}:[/red] {e}")
         return None
 
+def validate_roles(role_tokens: Dict[str, Dict]) -> bool:
+    if not isinstance(role_tokens, dict):
+        console.print("[red]Error:[/red] Role-token mapping must be a JSON object with role names as keys.")
+        return False
+    for role, headers in role_tokens.items():
+        if not isinstance(headers, dict):
+            console.print(f"[red]Error:[/red] Headers for role '{role}' must be a dictionary.")
+            return False
+    return True
+
 def test_endpoint(endpoint, role, token_headers):
     method = endpoint["method"].upper()
     url = endpoint["url"]
@@ -106,6 +116,10 @@ def main():
         console.print("[red]Error: Invalid input files.[/red]")
         return
 
+    if not validate_roles(role_tokens):
+        console.print("[red]Error: Invalid role-token mapping.[/red]")
+        return
+    
     results = run_tests(endpoints, role_tokens)
     write_report(results, output_path)
 
