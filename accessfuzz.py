@@ -30,7 +30,7 @@ def print_banner():
             ██║     ╚██████╔╝███████╗███████╗               
             ╚═╝      ╚═════╝ ╚══════╝╚══════╝               
                                        v0.1 
-               github.com/aswinmguptha/accessfuzz
+            github.com/aswinmguptha/accessfuzz
 """
     print(banner)
 
